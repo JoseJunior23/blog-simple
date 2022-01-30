@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -15,7 +16,7 @@ class PostController extends Controller
     {
         $posts = Post::orderBy('id', 'desc')->get();
 
-        return view('post.index', compact('posts'));
+        return view('posts.index', compact('posts'));
     }
 
     /**
@@ -25,7 +26,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -36,7 +37,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = auth()->user();
+        Post::create([
+            'title'=>$request->title,
+            'content' =>$request->content,
+            'user_id'=>$user->id
+        ]);
+
+        return redirect('/posts');
     }
 
     /**
@@ -47,7 +55,9 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = Post::find($id);
+
+        return view('posts.show', compact('post'));
     }
 
     /**
@@ -58,7 +68,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -70,7 +81,18 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = auth()->user();
+        $post = Post::find($id);
+
+        if($user->id != $post->user_id){
+            abort(404);
+        }
+
+        $post->update([
+            'title' => $request->title,
+            'content' =>$request->content
+        ]);
+        return redirect('/posts');
     }
 
     /**
@@ -81,6 +103,9 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::find($id);
+        $post->delete();
+        return redirect('/posts');
     }
 }
+

@@ -21,6 +21,12 @@ Route::post('/signin', [AuthController::class, 'signin'])->name('signin');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('dashboard', function () {
-    return view('dashboard');
-})->name('dashboard')->middleware('auth');
+
+Route::get('/posts', [PostController::class, 'index'])
+->name('dashboard')->middleware('auth');
+Route::get('/posts/create', [PostController::class, 'create']);
+Route::post('/posts/store', [PostController::class, 'store']);
+Route::get('/posts/{id}', [PostController::class, 'show']);
+Route::get('/posts/edit/{id}', [PostController::class, 'edit']);
+Route::post('/posts/update/{id}', [PostController::class, 'update']);
+Route::get('posts/delete/{id}', [PostController::class, 'destroy']);
